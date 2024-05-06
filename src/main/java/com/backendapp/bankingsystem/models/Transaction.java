@@ -16,16 +16,18 @@ public class Transaction {
     private long transactionId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private User user;
+    @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
+    private Customer customer;
 
     private String transactionMethod;
     private String transactionStatus;
+
     private String description;
+
     private String sourceAccountId;
     private String destinationAccountId;
     private double amount;
-    private LocalDateTime accountTimestamp = LocalDateTime.now();
+    private LocalDateTime Timestamp = LocalDateTime.now();
     private double changedBalance;
 
 

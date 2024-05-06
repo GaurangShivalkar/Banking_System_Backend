@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "branchs")
+@Table(name = "branches")
 public class Branch {
     @Id
     private Long branchId;

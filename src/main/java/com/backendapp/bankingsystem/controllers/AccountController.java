@@ -7,6 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/accounts")
 public class AccountController {
@@ -21,22 +24,31 @@ public class AccountController {
     }
 
     @GetMapping("/getAllAccounts")
-    public void getAllAccounts() {
+    public List<Account> getAllAccounts() {
+        List<Account> allAccounts = accountService.getAllAccounts();
+        return allAccounts;
     }
 
     @GetMapping("/getAccountsByCustomerId/{id}")
-    public void getAccountsByCustomerId(@PathVariable int id) {
+    public Optional<Account> getAccountsByCustomerId(@PathVariable long id) {
+        Optional<Account> customerAccount = accountService.getAccountByCustomerId(id);
+        return customerAccount;
     }
 
-    @GetMapping("/getAccountByAccountNo/{id}")
-    public void getAccountByAccountNo(@PathVariable int id) {
+    @GetMapping("/getAccountByAccountNo/{accNo}")
+    public Account getAccountByAccountNo(@PathVariable String accNo) {
+        return accountService.getAccountByAccountNo(accNo);
     }
 
     @PutMapping("/updateBalance/{id}")
-    public void updateBalance(@PathVariable int id, @RequestBody Account account) {
+    public ResponseEntity<String> updateBalance(@PathVariable Long id, @RequestBody double amount) {
+        Account updatedBalance = accountService.updateBalance(id, amount);
+        return new ResponseEntity<>("Account balance successfully", HttpStatus.OK);
     }
 
     @PutMapping("/updateAccount/{id}")
-    public void updateAccount(@PathVariable int id, @RequestBody Account account) {
+    public ResponseEntity<String> updateAccount(@PathVariable Long id, @RequestBody Account account) {
+        Account updatedAccount = accountService.updateAccount(id, account);
+        return new ResponseEntity<>("Account status has been changed to: " + updatedAccount.getAccountStatus(), HttpStatus.OK);
     }
 }
