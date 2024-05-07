@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,10 @@ public class UserController {
         return new ResponseEntity<>("User registered successfully with ID: " + registeredUser.getUserId(), HttpStatus.CREATED);
     }
 
+    @GetMapping("/loggedInUser")
+    public String loggedInUser(Principal principal) {
+        return principal.getName();
+    }
     @GetMapping("/showAllUsers")
     public List<User> getAllUser() {
         List<User> allUser = userService.getAllUsers();
