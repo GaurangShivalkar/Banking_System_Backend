@@ -1,14 +1,12 @@
 package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.models.User;
-import com.backendapp.bankingsystem.repositories.UserRepository;
 import com.backendapp.bankingsystem.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,20 +16,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
 
-    @PostMapping("/register")
-    public ResponseEntity<String> saveUser(@RequestBody User user) {
-
-        User registeredUser = userService.saveUser(user);
-        return new ResponseEntity<>("User registered successfully with ID: " + registeredUser.getUserId(), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/loggedInUser")
-    public String loggedInUser(Principal principal) {
-        return principal.getName();
-    }
     @GetMapping("/showAllUsers")
     public List<User> getAllUser() {
         List<User> allUser = userService.getAllUsers();
@@ -49,5 +34,13 @@ public class UserController {
 
         User updatedUser = userService.updateUser(id, user);
         return new ResponseEntity<>("the user is data is updated successfully" + updatedUser.getUsername(), HttpStatus.OK);
+    }
+
+    @PostMapping("/sendMail/{email}")
+    public String
+    sendMail(@PathVariable String email) {
+        String status = userService.sendSimpleMail(email);
+
+        return status;
     }
 }

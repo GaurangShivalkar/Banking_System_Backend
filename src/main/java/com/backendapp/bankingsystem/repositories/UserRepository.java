@@ -4,13 +4,9 @@ import com.backendapp.bankingsystem.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {
+    User findByEmailAndPassword(String email, String password);
     User findByUsername(String username);
 
-    Boolean existsByEmail(String email);
+    User findByEmail(String email);
 
-    User findByUsernameOrEmail(String username, String email);
-
-    boolean existsByUsername(String username);
-
-    User findByRole(String role);
 }

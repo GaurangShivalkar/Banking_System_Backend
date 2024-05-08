@@ -3,6 +3,10 @@ package com.backendapp.bankingsystem.services;
 import com.backendapp.bankingsystem.models.User;
 import com.backendapp.bankingsystem.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +18,11 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JavaMailSender javaMailSender;
+
+    @Value("${spring.mail.username}")
+    private String sender;
 
     public User saveUser(User user) {
 
@@ -47,7 +56,42 @@ public class UserService {
         }
     }
 
+    public User loadUserByEmail(String email, String password) throws UsernameNotFoundException {
+        User user = userRepository.findByEmailAndPassword(email, password);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+        return user;
+    }
 
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 
+    public String sendSimpleMail(String email) {
+
+        // Try block to check for exceptions
+        try {
+
+            // Creating a simple mail message
+            SimpleMailMessage mailMessage
+                    = new SimpleMailMessage();
+
+            // Setting up necessary details
+            mailMessage.setFrom(sender);
+            mailMessage.setTo(email);
+            mailMessage.setText("testing simple mail");
+            mailMessage.setSubject("to the testing user");
+
+            // Sending the mail
+            javaMailSender.send(mailMessage);
+            return "Mail Sent Successfully...";
+        }
+
+        // Catch block to handle the exceptions
+        catch (Exception e) {
+            return "Error while Sending Mail";
+        }
+    }
 
 }
