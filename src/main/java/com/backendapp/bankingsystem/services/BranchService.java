@@ -24,12 +24,12 @@ public class BranchService {
         return branchRepository.findAll();
     }
 
-    public Optional<Branch> getBranchById(Long branchId) {
+    public Optional<Branch> getBranchById(String branchId) {
         return branchRepository.findById(branchId);
     }
 
-    public Branch updateBranch(Long id, Branch updateBranch) {
-        Optional<Branch> existingBranch = branchRepository.findById(id);
+    public Branch updateBranch(String brancgId, Branch updateBranch) {
+        Optional<Branch> existingBranch = branchRepository.findById(brancgId);
         if (existingBranch.isPresent()) {
             Branch branch = existingBranch.get();
             if (updateBranch.getBranchAddress() != null) {

@@ -68,10 +68,12 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public String sendSimpleMail(String email) {
+
+    public String sendSimpleMail(String email, String otp) {
 
         // Try block to check for exceptions
         try {
+
 
             // Creating a simple mail message
             SimpleMailMessage mailMessage
@@ -80,8 +82,8 @@ public class UserService {
             // Setting up necessary details
             mailMessage.setFrom(sender);
             mailMessage.setTo(email);
-            mailMessage.setText("testing simple mail");
-            mailMessage.setSubject("to the testing user");
+            mailMessage.setText("The OTP for verification is: " + otp);
+            mailMessage.setSubject("Validate your Email");
 
             // Sending the mail
             javaMailSender.send(mailMessage);
@@ -93,5 +95,6 @@ public class UserService {
             return "Error while Sending Mail";
         }
     }
+
 
 }

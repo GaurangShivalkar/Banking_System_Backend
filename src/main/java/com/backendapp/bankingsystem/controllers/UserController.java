@@ -16,6 +16,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    private String storedOtp;
 
     @GetMapping("/showAllUsers")
     public List<User> getAllUser() {
@@ -36,11 +37,5 @@ public class UserController {
         return new ResponseEntity<>("the user is data is updated successfully" + updatedUser.getUsername(), HttpStatus.OK);
     }
 
-    @PostMapping("/sendMail/{email}")
-    public String
-    sendMail(@PathVariable String email) {
-        String status = userService.sendSimpleMail(email);
 
-        return status;
-    }
 }

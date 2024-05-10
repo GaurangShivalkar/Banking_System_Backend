@@ -33,13 +33,13 @@ public class BranchController {
     }
 
     @GetMapping("/showBranch/{id}")
-    public Optional<Branch> getBranchById(@PathVariable long id) {
+    public Optional<Branch> getBranchById(@PathVariable String id) {
         Optional<Branch> branchData = branchService.getBranchById(id);
         return branchData;
     }
 
     @PutMapping("/updateBranch/{id}")
-    public ResponseEntity<String> updateBranch(@PathVariable long id, @RequestBody Branch branch) {
+    public ResponseEntity<String> updateBranch(@PathVariable String id, @RequestBody Branch branch) {
 
         Branch updatedBranch = branchService.updateBranch(id, branch);
         return new ResponseEntity<>("the Branch data is updated successfully" + updatedBranch.getBranchName(), HttpStatus.OK);

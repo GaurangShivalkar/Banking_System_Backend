@@ -12,7 +12,7 @@ import lombok.Setter;
 @Table(name = "branches")
 public class Branch {
     @Id
-    private Long branchId;
+    private String branchId;
 
     private String branchName;
     private String branchAddress;

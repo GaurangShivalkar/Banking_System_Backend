@@ -27,6 +27,8 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests()
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("api/accounts/createAccount").permitAll()
+                .requestMatchers("api/customers/saveCustomer").permitAll()
                 .requestMatchers("/api/**").authenticated()
                 .and().exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

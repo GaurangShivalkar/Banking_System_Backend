@@ -1,8 +1,9 @@
 package com.backendapp.bankingsystem.controllers;
 
-import com.backendapp.bankingsystem.models.JwtRequest;
+import com.backendapp.bankingsystem.dto.JwtRequest;
 import com.backendapp.bankingsystem.models.User;
 import com.backendapp.bankingsystem.security.JwtHelper;
+import com.backendapp.bankingsystem.services.Generators;
 import com.backendapp.bankingsystem.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,8 @@ public class AuthController {
     private UserService userService;
     @Autowired
     private JwtHelper jwtHelper;
+
+    private static String storedOtp;
 //    @Autowired
 //    private AuthenticationManager authenticationManager;
 //    @Autowired
@@ -48,5 +51,26 @@ public class AuthController {
     @GetMapping("/loggedInUser")
     public String loggedInUser(Principal principal) {
         return principal.getName();
+    }
+
+    @PostMapping("/sendMail/{email}")
+    public String sendMail(@PathVariable String email) {
+        String otp = Generators.generateOTP();
+        String status = userService.sendSimpleMail(email, otp);
+        this.storedOtp = otp; // Store OTP temporarily in memory
+        return "OTP sent successfully to " + email;
+    }
+
+    @PostMapping("/verify")
+    public boolean verifyEmail(@RequestBody String otp) {
+
+        if (otp.equals(storedOtp)) {
+            // OTP verification successful
+            return true;
+        } else {
+            // Incorrect OTP
+            System.out.println("OTP " + otp + "doesn't match with " + storedOtp);
+            return false;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.backendapp.bankingsystem.models;
+package com.backendapp.bankingsystem.dto;
 
 import lombok.*;
 
