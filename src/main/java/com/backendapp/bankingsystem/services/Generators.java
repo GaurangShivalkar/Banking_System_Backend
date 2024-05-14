@@ -15,4 +15,22 @@ public class Generators {
         }
         return sb.toString();
     }
+
+    public static String generateUpiId(String username) {
+        // Remove any leading or trailing whitespace from the username
+        username = username.trim();
+
+        // Replace spaces with underscores (or remove them, depending on your preference)
+        username = username.replace(" ", "");
+
+        // Convert username to lowercase (UPI IDs are typically case-insensitive)
+        username = username.toLowerCase();
+
+        // Append a UPI domain to the username to form the UPI ID
+        String upiDomain = "@okenpupi"; // Change this to the desired UPI domain
+        String upiId = username + upiDomain;
+
+        return upiId;
+    }
+
 }

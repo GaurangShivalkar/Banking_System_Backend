@@ -10,6 +10,7 @@ import lombok.Setter;
 @Table(name = "customers")
 public class Customer {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long customerId;
 
     @ManyToOne
@@ -18,9 +19,9 @@ public class Customer {
 
     private String customerName;
     private String address;
-    private String phoneNumber;
     private String aadharNumber;
     private String panNumber;
+    private String phoneNumber;
     private String zipcode;
     private String status;
 

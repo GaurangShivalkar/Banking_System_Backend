@@ -27,9 +27,11 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("api/accounts/createAccount").permitAll()
-                .requestMatchers("api/customers/saveCustomer").permitAll()
-                .requestMatchers("/api/**").authenticated()
+                .requestMatchers("/api/accounts/createAccount").permitAll()
+                .requestMatchers("/api/customers/saveCustomer").permitAll()
+                .requestMatchers("/api/users/**").authenticated()
+                .requestMatchers("api/beneficiaries/**").authenticated()
+                .requestMatchers("api/transactions/**").authenticated()
                 .and().exceptionHandling(ex -> ex.authenticationEntryPoint(point))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

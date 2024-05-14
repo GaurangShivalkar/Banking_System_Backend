@@ -1,6 +1,7 @@
 package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.dto.JwtRequest;
+import com.backendapp.bankingsystem.dto.OtpDto;
 import com.backendapp.bankingsystem.models.User;
 import com.backendapp.bankingsystem.security.JwtHelper;
 import com.backendapp.bankingsystem.services.Generators;
@@ -62,15 +63,16 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    public boolean verifyEmail(@RequestBody String otp) {
-
-        if (otp.equals(storedOtp)) {
+    public boolean verifyEmail(@RequestBody OtpDto otpDto) {
+        String otp = otpDto.getOtp();
+        if (otp != null && otp.equals(storedOtp)) {
             // OTP verification successful
             return true;
         } else {
-            // Incorrect OTP
-            System.out.println("OTP " + otp + "doesn't match with " + storedOtp);
+            // Incorrect OTP or null OTP
+            System.out.println("Received OTP is incorrect or null: " + otp);
             return false;
         }
     }
+
 }
