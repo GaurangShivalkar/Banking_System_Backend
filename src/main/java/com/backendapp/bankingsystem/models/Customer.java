@@ -13,9 +13,7 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long customerId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId")
-    private User user;
+
 
     private String customerName;
     private String address;
