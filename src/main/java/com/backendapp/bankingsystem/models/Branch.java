@@ -16,5 +16,8 @@ public class Branch {
 
     private String branchName;
     private String branchAddress;
+    private String branchCity;
+    private String branchZipCode;
+
 
 }

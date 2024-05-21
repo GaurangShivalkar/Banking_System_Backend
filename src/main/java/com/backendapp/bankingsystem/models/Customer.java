@@ -1,6 +1,9 @@
 package com.backendapp.bankingsystem.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,19 +13,16 @@ import lombok.Setter;
 @Table(name = "customers")
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private long customerId;
-
-
 
     private String customerName;
     private String address;
+    @Column(unique = true)
     private String aadharNumber;
+    @Column(unique = true)
     private String panNumber;
     private String phoneNumber;
     private String zipcode;
     private String status;
 
-    @Column(unique = true)
-    private String upiId;
 }

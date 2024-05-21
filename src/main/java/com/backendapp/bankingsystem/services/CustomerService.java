@@ -45,4 +45,8 @@ public class CustomerService {
             throw new RuntimeException("User not found");
         }
     }
+
+    public Customer getCustomerByPanNumber(String panNumber) {
+        return customerRepository.findByPanNumber(panNumber);
+    }
 }

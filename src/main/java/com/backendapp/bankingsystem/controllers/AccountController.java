@@ -2,6 +2,7 @@ package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.models.Account;
 import com.backendapp.bankingsystem.services.AccountService;
+import com.backendapp.bankingsystem.services.Generators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,8 @@ public class AccountController {
 
     @PostMapping("/createAccount")
     public ResponseEntity<String> createAccount(@RequestBody Account account) {
-
+        account.setAccountNumber(Generators.generateAccountNumber());
+        account.setAccountStatus("pending");
         Account createdAccount = accountService.createAccount(account);
         return new ResponseEntity<>("Account registered successfully with ID: " + createdAccount.getAccountNumber(), HttpStatus.CREATED);
     }

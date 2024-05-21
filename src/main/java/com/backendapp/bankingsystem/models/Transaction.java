@@ -30,7 +30,9 @@ public class Transaction {
     private LocalDateTime Timestamp = LocalDateTime.now();
     private double changedBalance;
 
-
+    @ManyToOne
+    @JoinColumn(name = "beneficiary_id", referencedColumnName = "beneficiaryId")
+    private Beneficiary beneficiary;
 
 
 }

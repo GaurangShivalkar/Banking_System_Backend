@@ -4,6 +4,7 @@ import com.backendapp.bankingsystem.models.Customer;
 import com.backendapp.bankingsystem.repositories.CustomerRepository;
 import com.backendapp.bankingsystem.repositories.UserRepository;
 import com.backendapp.bankingsystem.services.CustomerService;
+import com.backendapp.bankingsystem.services.Generators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,9 @@ public class CustomerController {
 
     @PostMapping("/saveCustomer")
     public ResponseEntity<String> saveCustomer(@RequestBody Customer customer) {
-
+        long customerId = Long.parseLong(Generators.generateCustomerId());
+        customer.setCustomerId(customerId);
+        customer.setStatus("pending");
         Customer savedCustomer = customerService.saveCustomer(customer);
         return new ResponseEntity<>("Customer successfully registered with ID: " + savedCustomer.getCustomerId(), HttpStatus.OK);
     }
@@ -41,6 +44,12 @@ public class CustomerController {
     public Optional<Customer> getCustomerById(@PathVariable long id) {
         Optional<Customer> customerData = customerService.getCustomerById(id);
         return customerData;
+    }
+
+    @GetMapping("/getCustomerIdByPan")
+    public Long getCustomerIdByPan(@RequestParam String panNumber) {
+        Customer customerData = customerService.getCustomerByPanNumber(panNumber);
+        return customerData.getCustomerId();
     }
 
     @PutMapping("/updateCustomer/{id}")
