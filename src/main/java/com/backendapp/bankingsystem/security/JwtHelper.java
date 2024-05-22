@@ -12,6 +12,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
+
 @Component
 public class JwtHelper {
 
@@ -30,9 +31,11 @@ public class JwtHelper {
         user.setUserId((Integer) claims.get("userId"));
         user.setUsername((String) claims.get("username"));
         user.setEmail((String) claims.get("email"));
+        user.setRole((String) claims.get("role"));
         System.out.println("user: " + user);
         return user;
     }
+
 
     //retrieve expiration date from jwt token
     public Date getExpirationDateFromToken(String token) {
@@ -65,6 +68,7 @@ public class JwtHelper {
                 .claim("userId", user.getUserId())
                 .claim("username", user.getUsername())
                 .claim("email", user.getEmail())
+                .claim("role", user.getRole())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS256)

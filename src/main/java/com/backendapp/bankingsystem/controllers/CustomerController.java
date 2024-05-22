@@ -26,12 +26,12 @@ public class CustomerController {
     private UserRepository userRepository;
 
     @PostMapping("/saveCustomer")
-    public ResponseEntity<String> saveCustomer(@RequestBody Customer customer) {
+    public Long saveCustomer(@RequestBody Customer customer) {
         long customerId = Long.parseLong(Generators.generateCustomerId());
         customer.setCustomerId(customerId);
         customer.setStatus("pending");
         Customer savedCustomer = customerService.saveCustomer(customer);
-        return new ResponseEntity<>("Customer successfully registered with ID: " + savedCustomer.getCustomerId(), HttpStatus.OK);
+        return savedCustomer.getCustomerId();
     }
 
     @GetMapping("/showAllCustomer")

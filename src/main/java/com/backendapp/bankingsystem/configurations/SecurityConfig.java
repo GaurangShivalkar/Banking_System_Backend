@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/api/accounts/createAccount").permitAll()
                 .requestMatchers("/api/customers/saveCustomer").permitAll()
+                .requestMatchers("/api/users/getCustomerId/{email}").permitAll()
                 .requestMatchers("/api/users/**").authenticated()
                 .requestMatchers("api/beneficiaries/**").authenticated()
                 .requestMatchers("api/transactions/**").authenticated()

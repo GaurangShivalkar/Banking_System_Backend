@@ -30,6 +30,12 @@ public class UserController {
         return userData;
     }
 
+    @GetMapping("/getCustomerId/{email}")
+    public Long getCustomerIdByEmail(@PathVariable String email) {
+        User userData = userService.getUserByEmail(email);
+        Long customerId = userData.getCustomer().getCustomerId();
+        return customerId;
+    }
     @PutMapping("/updateUser/{id}")
     public ResponseEntity<String> updateUser(@PathVariable long id, @RequestBody User user) {
 

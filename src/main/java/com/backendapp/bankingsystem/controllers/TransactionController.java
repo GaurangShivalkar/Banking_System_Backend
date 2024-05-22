@@ -39,9 +39,9 @@ public class TransactionController {
     }
 
     @GetMapping("/getTransactionBySourceAccountId/{sourceAccountId}")
-    public List<Transaction> getTransactionBySourceAccountId(@RequestParam String sourceAccountId) {
-        return transactionService.getTransactionBySoureAccountId(sourceAccountId);
-
+    public List<Transaction> getTransactionBySourceAccountId(@PathVariable String sourceAccountId) {
+        List<Transaction> transactionList = transactionService.getTransactionBySourceAccountId(sourceAccountId);
+        return transactionList;
     }
 
 //    @GetMapping("/getByTimestamp/{timestamp}")

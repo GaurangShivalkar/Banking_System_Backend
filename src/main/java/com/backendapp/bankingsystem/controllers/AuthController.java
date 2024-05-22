@@ -6,6 +6,7 @@ import com.backendapp.bankingsystem.models.User;
 import com.backendapp.bankingsystem.security.JwtHelper;
 import com.backendapp.bankingsystem.services.Generators;
 import com.backendapp.bankingsystem.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,14 @@ public class AuthController {
         return new ResponseEntity<>("User registered successfully with ID: " + registeredUser.getUserId(), HttpStatus.CREATED);
     }
 
+
+    @GetMapping("/user")
+    public ResponseEntity<User> getUserDetails(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        User user = jwtHelper.getUserFromToken(token);
+        return ResponseEntity.ok(user);
+    }
+
     @PostMapping("/login")
     public String createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
 //        try {
@@ -46,6 +55,7 @@ public class AuthController {
 
         final User userDetails = userService.loadUserByEmail(jwtRequest.getEmail(), jwtRequest.getPassword());
         final String token = jwtHelper.generateToken(userDetails);
+
         return token;
     }
 

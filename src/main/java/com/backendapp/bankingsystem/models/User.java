@@ -23,4 +23,5 @@ public class User {
     @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
     private Customer customer;
 
+
 }

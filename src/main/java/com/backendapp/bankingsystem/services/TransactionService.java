@@ -27,8 +27,9 @@ public class TransactionService {
         return transactionRepository.findById(id);
     }
 
-    public List<Transaction> getTransactionBySoureAccountId(String soureAccountId) {
-        return (List<Transaction>) transactionRepository.findBySourceAccountId(soureAccountId);
+    public List<Transaction> getTransactionBySourceAccountId(String sourceAccountId) {
+        List<Transaction> transactionList = transactionRepository.findBySourceAccountId(sourceAccountId);
+        return transactionList;
     }
 
     //    public List<Transaction> getTransactionByTimestamp(String timestamp) {

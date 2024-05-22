@@ -25,7 +25,10 @@ public class Transaction {
     private String description;
 
     private String sourceAccountId;
+
+
     private String destinationAccountId;
+
     private double amount;
     private LocalDateTime Timestamp = LocalDateTime.now();
     private double changedBalance;

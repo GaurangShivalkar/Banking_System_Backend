@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -32,8 +31,8 @@ public class AccountController {
     }
 
     @GetMapping("/getAccountsByCustomerId/{id}")
-    public Optional<Account> getAccountsByCustomerId(@PathVariable long id) {
-        Optional<Account> customerAccount = accountService.getAccountByCustomerId(id);
+    public List<Account> getAccountsByCustomerId(@PathVariable long id) {
+        List<Account> customerAccount = accountService.getAccountByCustomerId(id);
         return customerAccount;
     }
 
