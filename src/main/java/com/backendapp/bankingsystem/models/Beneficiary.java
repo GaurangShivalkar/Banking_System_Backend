@@ -13,7 +13,7 @@ public class Beneficiary {
     private String name;
     private String accountNumber;
     private String bankName;
-
+    private String beneficiaryType;
     @ManyToOne
     @JoinColumn(name = "branchId", referencedColumnName = "branchId")
     private Branch branch;
