@@ -2,6 +2,7 @@ package com.backendapp.bankingsystem.services;
 
 import com.backendapp.bankingsystem.models.Customer;
 import com.backendapp.bankingsystem.repositories.CustomerRepository;
+import com.backendapp.bankingsystem.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,14 @@ public class CustomerService {
     @Autowired
     private CustomerRepository customerRepository;
 
-    public Customer saveCustomer(Customer customer) {
 
+    @Autowired
+    private UserRepository userRepository;
+
+    public Customer saveCustomer(Customer customer) {
+        long customerId = Long.parseLong(Generators.generateCustomerId());
+        customer.setCustomerId(customerId);
+        customer.setStatus("pending");
         return customerRepository.save(customer);
     }
 

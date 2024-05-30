@@ -1,10 +1,7 @@
 package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.models.Customer;
-import com.backendapp.bankingsystem.repositories.CustomerRepository;
-import com.backendapp.bankingsystem.repositories.UserRepository;
 import com.backendapp.bankingsystem.services.CustomerService;
-import com.backendapp.bankingsystem.services.Generators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,17 +16,11 @@ import java.util.Optional;
 public class CustomerController {
     @Autowired
     private CustomerService customerService;
-    @Autowired
-    private CustomerRepository customerRepository;
 
-    @Autowired
-    private UserRepository userRepository;
 
     @PostMapping("/saveCustomer")
     public Long saveCustomer(@RequestBody Customer customer) {
-        long customerId = Long.parseLong(Generators.generateCustomerId());
-        customer.setCustomerId(customerId);
-        customer.setStatus("pending");
+
         Customer savedCustomer = customerService.saveCustomer(customer);
         return savedCustomer.getCustomerId();
     }

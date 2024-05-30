@@ -22,6 +22,12 @@ public class BeneficiaryController {
         return ResponseEntity.ok(beneficiaries);
     }
 
+    @GetMapping("/getBeneficiaryByCustomerId")
+    public ResponseEntity<List<Beneficiary>> getBeneficiaryByCustomerId(@RequestParam Long customerId) {
+        List<Beneficiary> beneficiariesByCustId = beneficiaryService.getBeneficiariesByCustomerId(customerId);
+        return ResponseEntity.ok(beneficiariesByCustId);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Beneficiary> getBeneficiaryById(@PathVariable Long id) {
         Beneficiary beneficiary = beneficiaryService.getBeneficiaryById(id);
