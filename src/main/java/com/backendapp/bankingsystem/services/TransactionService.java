@@ -25,11 +25,11 @@ public class TransactionService {
     public Transaction insertTransaction(Transaction transaction) {
         Optional<Beneficiary> beneficiary = beneficiaryRepository.findById(transaction.getBeneficiary().getBeneficiaryId());
         transaction.setTransactionMethod(beneficiary.get().getBeneficiaryType());
-
+        transaction.setDestinationAccountId(beneficiary.get().getAccountNumber());
         Account sourceAccount = accountRepository.findByAccountNumber(transaction.getSourceAccountId());
 
         if (transaction.getTransactionMethod().equals("INTERNAL")) {
-            transaction.setDestinationAccountId(beneficiary.get().getAccountNumber());
+
             Account destinationAccount = accountRepository.findByAccountNumber(transaction.getDestinationAccountId());
             double receivedBalance = destinationAccount.getBalance() + transaction.getAmount();
             // Update the destination account balance
