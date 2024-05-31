@@ -49,7 +49,7 @@ public class TransactionController {
 //        return transactionService.getTransactionByTimestamp(timestamp);
 //    }
 
-    @PutMapping("updateTransactionStatus")
+    @PutMapping("/updateTransactionStatus")
     public ResponseEntity<String> updateTransactionStatus(@RequestBody Long id, @RequestBody Transaction transaction) {
         Transaction updatedTransaction = transactionService.updateTransaction(id, transaction);
         return new ResponseEntity<>("Transaction status has been changed to: " + updatedTransaction.getTransactionStatus(), HttpStatus.OK);

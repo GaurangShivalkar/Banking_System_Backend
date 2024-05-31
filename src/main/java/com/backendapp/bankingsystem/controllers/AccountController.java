@@ -47,6 +47,8 @@ public class AccountController {
         return new ResponseEntity<>("Account balance successfully", HttpStatus.OK);
     }
 
+
+    @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/updateAccount/{id}")
     public ResponseEntity<String> updateAccount(@PathVariable Long id, @RequestBody Account account) {
         Account updatedAccount = accountService.updateAccount(id, account);
