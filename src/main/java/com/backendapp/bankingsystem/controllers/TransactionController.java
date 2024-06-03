@@ -38,6 +38,7 @@ public class TransactionController {
 
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/getTransactionBySourceAccountId/{sourceAccountId}")
     public List<Transaction> getTransactionBySourceAccountId(@PathVariable String sourceAccountId) {
         List<Transaction> transactionList = transactionService.getTransactionBySourceAccountId(sourceAccountId);
@@ -49,8 +50,8 @@ public class TransactionController {
 //        return transactionService.getTransactionByTimestamp(timestamp);
 //    }
 
-    @PutMapping("/updateTransactionStatus")
-    public ResponseEntity<String> updateTransactionStatus(@RequestBody Long id, @RequestBody Transaction transaction) {
+    @PutMapping("/updateTransactionStatus/{id}")
+    public ResponseEntity<String> updateTransactionStatus(@PathVariable Long id, @RequestBody Transaction transaction) {
         Transaction updatedTransaction = transactionService.updateTransaction(id, transaction);
         return new ResponseEntity<>("Transaction status has been changed to: " + updatedTransaction.getTransactionStatus(), HttpStatus.OK);
     }
