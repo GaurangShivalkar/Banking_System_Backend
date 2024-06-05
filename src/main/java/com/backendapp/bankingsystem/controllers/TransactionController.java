@@ -38,7 +38,7 @@ public class TransactionController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:5173")
+
     @GetMapping("/getTransactionBySourceAccountId/{sourceAccountId}")
     public List<Transaction> getTransactionBySourceAccountId(@PathVariable String sourceAccountId) {
         List<Transaction> transactionList = transactionService.getTransactionBySourceAccountId(sourceAccountId);

@@ -21,6 +21,7 @@ public class Transaction {
 
     private String transactionMethod;
     private String transactionStatus;
+    private String transactionType;
 
     private String description;
 
