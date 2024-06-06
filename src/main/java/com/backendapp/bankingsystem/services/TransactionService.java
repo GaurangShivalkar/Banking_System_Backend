@@ -64,7 +64,7 @@ public class TransactionService {
     }
 
     public List<Transaction> getTransactionBySourceAccountId(String sourceAccountId) {
-        List<Transaction> transactionList = transactionRepository.findBySourceAccountId(sourceAccountId);
+        List<Transaction> transactionList = transactionRepository.findBySourceAccountIdOrDestinationAccountId(sourceAccountId, sourceAccountId);
         return transactionList;
     }
 
