@@ -67,7 +67,9 @@ public class AuthController {
     @PostMapping("/sendMail/{email}")
     public String sendMail(@PathVariable String email) {
         String otp = Generators.generateOTP();
-        String status = userService.sendSimpleMail(email, otp);
+        String otpMsg = "The OTP for verification is:" + otp;
+        String otpSubject = "Validate your Email";
+        String status = userService.sendSimpleMail(email, otpMsg, otpSubject);
         this.storedOtp = otp; // Store OTP temporarily in memory
         return "OTP sent successfully to " + email;
     }
@@ -84,5 +86,13 @@ public class AuthController {
             return false;
         }
     }
+
+    @PutMapping("/updateUser/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable long id, @RequestBody User user) {
+
+        User updatedUser = userService.updateUser(id, user);
+        return new ResponseEntity<>("the user is data is updated successfully" + updatedUser.getUsername(), HttpStatus.OK);
+    }
+
 
 }

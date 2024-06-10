@@ -32,11 +32,13 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
+
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(Long userId) {
-        return userRepository.findById(userId);
+    public User getUserById(Long userId) {
+        User userDetail = userRepository.findByUserId(userId);
+        return userDetail;
     }
 
     public User updateUser(Long id, User updatedUser) {
@@ -69,7 +71,7 @@ public class UserService {
     }
 
 
-    public String sendSimpleMail(String email, String otp) {
+    public String sendSimpleMail(String email, String text, String subject) {
 
         // Try block to check for exceptions
         try {
@@ -82,8 +84,10 @@ public class UserService {
             // Setting up necessary details
             mailMessage.setFrom(sender);
             mailMessage.setTo(email);
-            mailMessage.setText("The OTP for verification is: " + otp);
-            mailMessage.setSubject("Validate your Email");
+//            mailMessage.setText("The OTP for verification is: " + otp);\
+            mailMessage.setText(text);
+            mailMessage.setSubject(subject);
+//            mailMessage.setSubject("Validate your Email");
 
             // Sending the mail
             javaMailSender.send(mailMessage);
@@ -96,5 +100,30 @@ public class UserService {
         }
     }
 
-
+//    public String sendMail(String email, String text) {
+//
+//        // Try block to check for exceptions
+//        try {
+//
+//
+//            // Creating a simple mail message
+//            SimpleMailMessage mailMessage
+//                    = new SimpleMailMessage();
+//
+//            // Setting up necessary details
+//            mailMessage.setFrom(sender);
+//            mailMessage.setTo(email);
+//            mailMessage.setText(text);
+//            mailMessage.setSubject("Meassage from ENQ bank");
+//
+//            // Sending the mail
+//            javaMailSender.send(mailMessage);
+//            return "Mail Sent Successfully...";
+//        }
+//
+//        // Catch block to handle the exceptions
+//        catch (Exception e) {
+//            return "Error while Sending Mail";
+//        }
+//    }
 }

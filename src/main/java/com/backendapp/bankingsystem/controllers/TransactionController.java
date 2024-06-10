@@ -39,6 +39,7 @@ public class TransactionController {
     }
 
 
+
     @GetMapping("/getTransactionBySourceAccountId/{sourceAccountId}")
     public List<Transaction> getTransactionBySourceAccountId(@PathVariable String sourceAccountId) {
         List<Transaction> transactionList = transactionService.getTransactionBySourceAccountId(sourceAccountId);
@@ -53,6 +54,9 @@ public class TransactionController {
     @PutMapping("/updateTransactionStatus/{id}")
     public ResponseEntity<String> updateTransactionStatus(@PathVariable Long id, @RequestBody Transaction transaction) {
         Transaction updatedTransaction = transactionService.updateTransaction(id, transaction);
+//        String otpMsg = "The OTP for verification is:";
+//        String otpSubject = "Update ont he tranasaction status";
+//        String status = userService.sendSimpleMail(email, otpMsg, otpSubject);
         return new ResponseEntity<>("Transaction status has been changed to: " + updatedTransaction.getTransactionStatus(), HttpStatus.OK);
     }
 }
