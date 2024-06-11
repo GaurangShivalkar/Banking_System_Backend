@@ -89,8 +89,11 @@ public class AuthController {
 
     @PutMapping("/updateUser/{id}")
     public ResponseEntity<String> updateUser(@PathVariable long id, @RequestBody User user) {
-
         User updatedUser = userService.updateUser(id, user);
+        String msg = "Hi your password has been updated for user with email " + updatedUser.getEmail() + "! \nPlease contact the bank moderator if you havent change the password";
+        String subject = "Update on Password change";
+        String email = updatedUser.getEmail();
+        userService.sendSimpleMail(email, msg, subject);
         return new ResponseEntity<>("the user is data is updated successfully" + updatedUser.getUsername(), HttpStatus.OK);
     }
 

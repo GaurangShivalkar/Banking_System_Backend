@@ -4,6 +4,7 @@ package com.backendapp.bankingsystem.controllers;
 import com.backendapp.bankingsystem.models.Transaction;
 import com.backendapp.bankingsystem.repositories.TransactionRepository;
 import com.backendapp.bankingsystem.services.TransactionService;
+import com.backendapp.bankingsystem.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,18 @@ public class TransactionController {
     private TransactionService transactionService;
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/makeTransaction")
     public ResponseEntity<String> insertTransaction(@RequestBody Transaction transaction) {
 
         Transaction insertedTransaction = transactionService.insertTransaction(transaction);
+        String msg = "Hi Customer " + insertedTransaction.getCustomer().getCustomerName() + " your transaction with " + insertedTransaction.getBeneficiary().getName() + " has been with successfully processed of Rs " + insertedTransaction.getAmount();
+        String subject = "Your transaction has been processed successfully!!";
+        Long customerId = insertedTransaction.getCustomer().getCustomerId();
+        String email = userService.getEmailByCustomer(customerId);
+        userService.sendSimpleMail(email, msg, subject);
         return new ResponseEntity<>("Transaction inserted successfully with ID: " + insertedTransaction.getTransactionId(), HttpStatus.CREATED);
     }
 
@@ -37,8 +45,6 @@ public class TransactionController {
         return transactionService.getTransactionById(id);
 
     }
-
-
 
     @GetMapping("/getTransactionBySourceAccountId/{sourceAccountId}")
     public List<Transaction> getTransactionBySourceAccountId(@PathVariable String sourceAccountId) {
@@ -54,9 +60,12 @@ public class TransactionController {
     @PutMapping("/updateTransactionStatus/{id}")
     public ResponseEntity<String> updateTransactionStatus(@PathVariable Long id, @RequestBody Transaction transaction) {
         Transaction updatedTransaction = transactionService.updateTransaction(id, transaction);
-//        String otpMsg = "The OTP for verification is:";
-//        String otpSubject = "Update ont he tranasaction status";
-//        String status = userService.sendSimpleMail(email, otpMsg, otpSubject);
+        String msg = "Hi your transaction has been updated with " + transaction.getTransactionStatus() + " status \n Please contact the bank moderator for any queries";
+        String subject = "Update on the transaction status";
+        Long customerId = updatedTransaction.getCustomer().getCustomerId();
+        String email = userService.getEmailByCustomer(customerId);
+        userService.sendSimpleMail(email, msg, subject);
         return new ResponseEntity<>("Transaction status has been changed to: " + updatedTransaction.getTransactionStatus(), HttpStatus.OK);
     }
+
 }
