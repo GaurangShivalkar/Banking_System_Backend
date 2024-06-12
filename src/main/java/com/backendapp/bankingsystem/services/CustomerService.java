@@ -30,8 +30,8 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    public Optional<Customer> getCustomerById(Long customerId) {
-        return customerRepository.findById(customerId);
+    public Customer getCustomerById(Long customerId) {
+        return customerRepository.findByCustomerId(customerId);
     }
 
     public Customer updateCustomer(Long customerId, Customer updatedCustomer) {

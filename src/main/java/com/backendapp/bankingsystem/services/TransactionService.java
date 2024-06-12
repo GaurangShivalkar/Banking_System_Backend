@@ -36,22 +36,29 @@ public class TransactionService {
             destinationAccount.setBalance(receivedBalance);
             accountRepository.save(destinationAccount);
         }
+
         // Check if the balance is sufficient
         if (sourceAccount.getBalance() < transaction.getAmount()) {
-            System.out.println("Insufficient balance in the source account");
+            throw new IllegalArgumentException("Insufficient balance in the source account");
+        }
+        if (transaction.getTransactionType().equals("RTGS") && transaction.getAmount() < 200000) {
+            throw new IllegalArgumentException("The amount can't be less than 2 lakh rs for RTGS transactions");
+        }
+
+        if (transaction.getTransactionType().equals("IMPS") && transaction.getAmount() > 200000) {
+            throw new IllegalArgumentException("The amount can't be more than 2 lakh rs for IMPS transactions");
         }
 
         // Calculate the new balance
         double newBalance = sourceAccount.getBalance() - transaction.getAmount();
 
-
         // Update the source account balance
         sourceAccount.setBalance(newBalance);
         accountRepository.save(sourceAccount);
 
-
         // Update the transaction with the new balance
         transaction.setChangedBalance(newBalance);
+
         return transactionRepository.save(transaction);
     }
 

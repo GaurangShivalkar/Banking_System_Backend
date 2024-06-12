@@ -25,14 +25,17 @@ public class TransactionController {
 
     @PostMapping("/makeTransaction")
     public ResponseEntity<String> insertTransaction(@RequestBody Transaction transaction) {
-
-        Transaction insertedTransaction = transactionService.insertTransaction(transaction);
-        String msg = "Hi Customer " + insertedTransaction.getCustomer().getCustomerName() + " your transaction with " + insertedTransaction.getBeneficiary().getName() + " has been with successfully processed of Rs " + insertedTransaction.getAmount();
-        String subject = "Your transaction has been processed successfully!!";
-        Long customerId = insertedTransaction.getCustomer().getCustomerId();
-        String email = userService.getEmailByCustomer(customerId);
-        userService.sendSimpleMail(email, msg, subject);
-        return new ResponseEntity<>("Transaction inserted successfully with ID: " + insertedTransaction.getTransactionId(), HttpStatus.CREATED);
+        try {
+            Transaction insertedTransaction = transactionService.insertTransaction(transaction);
+            String msg = "Hi Customer " + insertedTransaction.getCustomer().getCustomerName() + " your transaction with " + insertedTransaction.getBeneficiary().getName() + " has been with successfully processed of Rs " + insertedTransaction.getAmount();
+            String subject = "Your transaction has been processed successfully!!";
+            Long customerId = insertedTransaction.getCustomer().getCustomerId();
+            String email = userService.getEmailByCustomer(customerId);
+            userService.sendSimpleMail(email, msg, subject);
+            return new ResponseEntity<>("Transaction inserted successfully with ID: " + insertedTransaction.getTransactionId(), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/showTransaction")

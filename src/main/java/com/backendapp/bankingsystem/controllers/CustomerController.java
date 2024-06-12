@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -32,8 +31,8 @@ public class CustomerController {
     }
 
     @GetMapping("/showCustomer/{id}")
-    public Optional<Customer> getCustomerById(@PathVariable long id) {
-        Optional<Customer> customerData = customerService.getCustomerById(id);
+    public Customer getCustomerById(@PathVariable long id) {
+        Customer customerData = customerService.getCustomerById(id);
         return customerData;
     }
 
