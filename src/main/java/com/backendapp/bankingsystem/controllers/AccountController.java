@@ -36,6 +36,11 @@ public class AccountController {
         return customerAccount;
     }
 
+    @GetMapping("/sumOfAccounts/{customerId}")
+    public Double getSumOfBalances(@PathVariable long customerId) {
+        return accountService.getSumOfBalancesByCustomerId(customerId);
+    }
+
     @GetMapping("/getAccountByAccountNo/{accNo}")
     public Account getAccountByAccountNo(@PathVariable String accNo) {
         return accountService.getAccountByAccountNo(accNo);

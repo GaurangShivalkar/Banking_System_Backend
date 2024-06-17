@@ -28,6 +28,11 @@ public class AccountService {
         return accountRepository.findByCustomer_CustomerId(id);
     }
 
+    public Double getSumOfBalancesByCustomerId(long customerId) {
+        Double sum = accountRepository.findSumOfBalancesByCustomerId(customerId);
+        return sum != null ? sum : 0.0; // return 0.0 if sum is null
+    }
+
     public Account getAccountByAccountNo(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber);
     }

@@ -3,10 +3,13 @@ package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.models.Transaction;
 import com.backendapp.bankingsystem.repositories.TransactionRepository;
+import com.backendapp.bankingsystem.services.PdfService;
 import com.backendapp.bankingsystem.services.TransactionService;
 import com.backendapp.bankingsystem.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +25,8 @@ public class TransactionController {
     private TransactionRepository transactionRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private PdfService pdfService;
 
     @PostMapping("/makeTransaction")
     public ResponseEntity<String> insertTransaction(@RequestBody Transaction transaction) {
@@ -43,6 +48,7 @@ public class TransactionController {
         return transactionService.getAllTransactions();
     }
 
+
     @GetMapping("/getTransactionsById/{id}")
     public Optional<Transaction> getTransactionById(@RequestParam long id) {
         return transactionService.getTransactionById(id);
@@ -53,6 +59,22 @@ public class TransactionController {
     public List<Transaction> getTransactionBySourceAccountId(@PathVariable String sourceAccountId) {
         List<Transaction> transactionList = transactionService.getTransactionBySourceAccountId(sourceAccountId);
         return transactionList;
+    }
+
+    @GetMapping("/getPdf/{sourceAccountId}")
+    public ResponseEntity<byte[]> getTransactionBySourceAccountIdPdf(@PathVariable String sourceAccountId) {
+        try {
+            List<Transaction> transactionList = transactionService.getTransactionBySourceAccountId(sourceAccountId);
+            byte[] pdfContent = pdfService.generateTransactionStatusPdf(transactionList);
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions_by_source_account.pdf")
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(pdfContent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
 //    @GetMapping("/getByTimestamp/{timestamp}")
