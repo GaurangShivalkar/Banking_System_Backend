@@ -1,6 +1,5 @@
 package com.backendapp.bankingsystem.controllers;
 
-
 import com.backendapp.bankingsystem.models.Transaction;
 import com.backendapp.bankingsystem.repositories.TransactionRepository;
 import com.backendapp.bankingsystem.services.PdfService;
@@ -48,7 +47,6 @@ public class TransactionController {
         return transactionService.getAllTransactions();
     }
 
-
     @GetMapping("/getTransactionsById/{id}")
     public Optional<Transaction> getTransactionById(@RequestParam long id) {
         return transactionService.getTransactionById(id);
@@ -77,11 +75,6 @@ public class TransactionController {
         }
     }
 
-//    @GetMapping("/getByTimestamp/{timestamp}")
-//    public List<Transaction> getByTimestamp(@PathVariable String timestamp) {
-//        return transactionService.getTransactionByTimestamp(timestamp);
-//    }
-
     @PutMapping("/updateTransactionStatus/{id}")
     public ResponseEntity<String> updateTransactionStatus(@PathVariable Long id, @RequestBody Transaction transaction) {
         Transaction updatedTransaction = transactionService.updateTransaction(id, transaction);
@@ -93,4 +86,13 @@ public class TransactionController {
         return new ResponseEntity<>("Transaction status has been changed to: " + updatedTransaction.getTransactionStatus(), HttpStatus.OK);
     }
 
+    @GetMapping("/getTotalCredits/{accountNumber}")
+    public double getTotalCredits(@PathVariable String accountNumber) {
+        return transactionService.getTotalCredits(accountNumber);
+    }
+
+    @GetMapping("/getTotalDebits/{accountNumber}")
+    public double getTotalDebits(@PathVariable String accountNumber) {
+        return transactionService.getTotalDebits(accountNumber);
+    }
 }

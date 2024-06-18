@@ -8,4 +8,7 @@ import java.util.List;
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findBySourceAccountIdOrDestinationAccountId(String sourceAccountId, String destinationAccountId);
     //Transaction findByTimestamp(String timestamp);
+    List<Transaction> findBySourceAccountId(String sourceAccountId);
+
+    List<Transaction> findByDestinationAccountId(String destinationAccountId);
 }

@@ -89,6 +89,19 @@ public class TransactionService {
         } else {
             throw new RuntimeException("Account not found");
         }
+    }
 
+    public double getTotalDebits(String accountNumber) {
+        return transactionRepository.findBySourceAccountId(accountNumber)
+                .stream()
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+    }
+
+    public double getTotalCredits(String accountNumber) {
+        return transactionRepository.findByDestinationAccountId(accountNumber)
+                .stream()
+                .mapToDouble(Transaction::getAmount)
+                .sum();
     }
 }
