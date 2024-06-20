@@ -2,6 +2,7 @@ package com.backendapp.bankingsystem.repositories;
 
 import com.backendapp.bankingsystem.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByUserId(Long id);
@@ -10,5 +11,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByCustomer_CustomerId(Long customerId);
     User findByEmail(String email);
+
+    @Query("SELECT Count(userId) FROM User")
+    long countUsers();
+
 
 }

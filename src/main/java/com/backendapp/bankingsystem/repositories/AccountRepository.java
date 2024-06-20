@@ -14,4 +14,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT SUM(a.balance) FROM Account a WHERE a.customer.customerId = :customerId")
     Double findSumOfBalancesByCustomerId(@Param("customerId") long customerId);
+
+    @Query("SELECT SUM(balance) FROM Account ")
+    long totalAmountOfBalance();
+
+    @Query("SELECT COUNT(accountId) FROM Account ")
+    long totalAccount();
 }

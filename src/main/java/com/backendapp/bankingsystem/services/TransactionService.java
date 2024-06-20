@@ -10,8 +10,7 @@ import com.backendapp.bankingsystem.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class TransactionService {
@@ -104,4 +103,40 @@ public class TransactionService {
                 .mapToDouble(Transaction::getAmount)
                 .sum();
     }
+
+    //    public List<Object[]> getTotalChangedBalanceByDate(String sourceAccountId) {
+//        return transactionRepository.getTotalChangedBalanceByDate(sourceAccountId);
+//    }
+    public List<Map<String, Object>> getTotalChangedBalanceByDate(String sourceAccountId) {
+        List<Object[]> results = transactionRepository.getTotalChangedBalanceByDate(sourceAccountId);
+        List<Map<String, Object>> transactionCounts = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> countMap = new HashMap<>();
+            countMap.put("date", result[0]);
+            countMap.put("balance", result[1]);
+            transactionCounts.add(countMap);
+        }
+
+        return transactionCounts;
+    }
+//    public Map<String, Long> getTransactionCountsMonthWise() {
+//        List<Object[]> result = transactionRepository.countTransactionsGroupedByMonth();
+//        Map<String, Long> transactionCounts = new HashMap<>();
+//
+//        for (Object[] row : result) {
+//            int monthValue = (int) row[0];
+//            int year = (int) row[1];
+//            long count = (long) row[2];
+//
+//            Month month = Month.of(monthValue);
+//            String monthName = month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
+//            String key = monthName + " " + year;
+//
+//            transactionCounts.put(key, count);
+//        }
+//
+//        return transactionCounts;
+//    }
+
 }

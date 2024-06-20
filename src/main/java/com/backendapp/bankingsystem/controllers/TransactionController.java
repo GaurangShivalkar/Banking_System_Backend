@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -95,4 +96,17 @@ public class TransactionController {
     public double getTotalDebits(@PathVariable String accountNumber) {
         return transactionService.getTotalDebits(accountNumber);
     }
+
+    @GetMapping("/changedBalance/{accountNumber}")
+    public List<Map<String, Object>> getTotalChangedBalance(@PathVariable String accountNumber) {
+        // Replace '6102056423' with the actual source account ID you want to query
+
+        return transactionService.getTotalChangedBalanceByDate(accountNumber);
+    }
+
+//    @GetMapping("/monthly-counts")
+//    public Map<String, Long> getTransactionCountsMonthWise() {
+//        Map<String, Long> transactionCounts = transactionService.getTransactionCountsMonthWise();
+//        return transactionCounts;
+//    }
 }
