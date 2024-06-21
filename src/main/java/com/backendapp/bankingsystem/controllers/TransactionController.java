@@ -99,14 +99,8 @@ public class TransactionController {
 
     @GetMapping("/changedBalance/{accountNumber}")
     public List<Map<String, Object>> getTotalChangedBalance(@PathVariable String accountNumber) {
-        // Replace '6102056423' with the actual source account ID you want to query
 
         return transactionService.getTotalChangedBalanceByDate(accountNumber);
     }
 
-//    @GetMapping("/monthly-counts")
-//    public Map<String, Long> getTransactionCountsMonthWise() {
-//        Map<String, Long> transactionCounts = transactionService.getTransactionCountsMonthWise();
-//        return transactionCounts;
-//    }
 }

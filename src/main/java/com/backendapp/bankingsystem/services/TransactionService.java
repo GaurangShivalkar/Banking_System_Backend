@@ -71,12 +71,16 @@ public class TransactionService {
 
     public List<Transaction> getTransactionBySourceAccountId(String sourceAccountId) {
         List<Transaction> transactionList = transactionRepository.findBySourceAccountIdOrDestinationAccountId(sourceAccountId, sourceAccountId);
+//
+        for (Transaction transaction : transactionList) {
+            if (transaction.getDestinationAccountId().equals(sourceAccountId)) {
+                Account destinationAccount = accountRepository.findByAccountNumber(transaction.getDestinationAccountId());
+                transaction.setChangedBalance(destinationAccount.getBalance());
+            }
+        }
         return transactionList;
     }
 
-    //    public List<Transaction> getTransactionByTimestamp(String timestamp) {
-//        return (List<Transaction>) transactionRepository.findByTimestamp(timestamp);
-//    }
     public Transaction updateTransaction(Long id, Transaction updatedTransaction) {
         Optional<Transaction> existingTransaction = transactionRepository.findById(id);
         if (existingTransaction.isPresent()) {
@@ -104,9 +108,6 @@ public class TransactionService {
                 .sum();
     }
 
-    //    public List<Object[]> getTotalChangedBalanceByDate(String sourceAccountId) {
-//        return transactionRepository.getTotalChangedBalanceByDate(sourceAccountId);
-//    }
     public List<Map<String, Object>> getTotalChangedBalanceByDate(String sourceAccountId) {
         List<Object[]> results = transactionRepository.getTotalChangedBalanceByDate(sourceAccountId);
         List<Map<String, Object>> transactionCounts = new ArrayList<>();
@@ -120,23 +121,5 @@ public class TransactionService {
 
         return transactionCounts;
     }
-//    public Map<String, Long> getTransactionCountsMonthWise() {
-//        List<Object[]> result = transactionRepository.countTransactionsGroupedByMonth();
-//        Map<String, Long> transactionCounts = new HashMap<>();
-//
-//        for (Object[] row : result) {
-//            int monthValue = (int) row[0];
-//            int year = (int) row[1];
-//            long count = (long) row[2];
-//
-//            Month month = Month.of(monthValue);
-//            String monthName = month.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
-//            String key = monthName + " " + year;
-//
-//            transactionCounts.put(key, count);
-//        }
-//
-//        return transactionCounts;
-//    }
 
 }

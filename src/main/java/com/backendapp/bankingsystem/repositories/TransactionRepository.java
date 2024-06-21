@@ -31,10 +31,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "FROM Transaction t")
     List<Object[]> countTransactionTypes();
 
-    @Query("SELECT DATE(timestamp) AS transactionDate, SUM(changedBalance) AS totalChangedBalance " +
+    @Query("SELECT EXTRACT(DATE FROM Timestamp) AS transactionDate, changedBalance AS total_changed_balance " +
             "FROM Transaction " +
-            "WHERE sourceAccountId = ?1 " +
-            "GROUP BY DATE(timestamp) " +
-            "ORDER BY DATE(timestamp)")
+            "WHERE sourceAccountId  = ?1 OR destinationAccountId = ?1" +
+
+            " ORDER BY EXTRACT(DATE FROM Timestamp)")
     List<Object[]> getTotalChangedBalanceByDate(String sourceAccountId);
 }
