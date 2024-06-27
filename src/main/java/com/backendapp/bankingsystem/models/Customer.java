@@ -14,7 +14,7 @@ import lombok.Setter;
 public class Customer {
     @Id
     private long customerId;
-
+    private String email;
     private String customerName;
     private String address;
     @Column(unique = true)

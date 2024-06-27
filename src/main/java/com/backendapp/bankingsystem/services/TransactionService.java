@@ -31,6 +31,7 @@ public class TransactionService {
 
             Account destinationAccount = accountRepository.findByAccountNumber(transaction.getDestinationAccountId());
             double receivedBalance = destinationAccount.getBalance() + transaction.getAmount();
+            transaction.setReceiverBalance(receivedBalance);
             // Update the destination account balance
             destinationAccount.setBalance(receivedBalance);
             accountRepository.save(destinationAccount);

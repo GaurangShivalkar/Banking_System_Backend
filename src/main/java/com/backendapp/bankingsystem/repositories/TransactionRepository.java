@@ -31,7 +31,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             "FROM Transaction t")
     List<Object[]> countTransactionTypes();
 
-    @Query("SELECT EXTRACT(DATE FROM Timestamp) AS transactionDate, changedBalance AS total_changed_balance " +
+    @Query("SELECT EXTRACT(DATE FROM Timestamp) AS transactionDate, " +
+            "CASE WHEN sourceAccountId =?1 THEN changedBalance ELSE receiverBalance END AS total_changed_balance " +
             "FROM Transaction " +
             "WHERE sourceAccountId  = ?1 OR destinationAccountId = ?1" +
 

@@ -2,6 +2,7 @@ package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.models.Customer;
 import com.backendapp.bankingsystem.services.CustomerService;
+import com.backendapp.bankingsystem.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,17 @@ import java.util.List;
 public class CustomerController {
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private UserService userService;
 
 
     @PostMapping("/saveCustomer")
     public Long saveCustomer(@RequestBody Customer customer) {
 
         Customer savedCustomer = customerService.saveCustomer(customer);
+        String custMsg = "The user customer Id is: " + savedCustomer.getCustomerId() + "\nThe user email for registration is " + savedCustomer.getEmail();
+        String custSubject = "Details for registration";
+        userService.sendSimpleMail(savedCustomer.getEmail(), custMsg, custSubject);
         return savedCustomer.getCustomerId();
     }
 
