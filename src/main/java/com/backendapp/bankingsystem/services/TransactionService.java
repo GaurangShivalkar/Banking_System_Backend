@@ -1,6 +1,5 @@
 package com.backendapp.bankingsystem.services;
 
-
 import com.backendapp.bankingsystem.models.Account;
 import com.backendapp.bankingsystem.models.Beneficiary;
 import com.backendapp.bankingsystem.models.Transaction;
@@ -9,6 +8,7 @@ import com.backendapp.bankingsystem.repositories.BeneficiaryRepository;
 import com.backendapp.bankingsystem.repositories.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -21,23 +21,25 @@ public class TransactionService {
     @Autowired
     private BeneficiaryRepository beneficiaryRepository;
 
+    @Transactional
     public Transaction insertTransaction(Transaction transaction) {
         Optional<Beneficiary> beneficiary = beneficiaryRepository.findById(transaction.getBeneficiary().getBeneficiaryId());
+        if (beneficiary.isEmpty()) {
+            throw new IllegalArgumentException("Beneficiary not found");
+        }
+
         transaction.setTransactionMethod(beneficiary.get().getBeneficiaryType());
         transaction.setDestinationAccountId(beneficiary.get().getAccountNumber());
         Account sourceAccount = accountRepository.findByAccountNumber(transaction.getSourceAccountId());
 
         if (transaction.getTransactionMethod().equals("INTERNAL")) {
-
             Account destinationAccount = accountRepository.findByAccountNumber(transaction.getDestinationAccountId());
             double receivedBalance = destinationAccount.getBalance() + transaction.getAmount();
             transaction.setReceiverBalance(receivedBalance);
-            // Update the destination account balance
             destinationAccount.setBalance(receivedBalance);
             accountRepository.save(destinationAccount);
         }
 
-        // Check if the balance is sufficient
         if (sourceAccount.getBalance() < transaction.getAmount()) {
             throw new IllegalArgumentException("Insufficient balance in the source account");
         }
@@ -49,16 +51,11 @@ public class TransactionService {
             throw new IllegalArgumentException("The amount can't be more than 2 lakh rs for IMPS transactions");
         }
 
-        // Calculate the new balance
         double newBalance = sourceAccount.getBalance() - transaction.getAmount();
-
-        // Update the source account balance
         sourceAccount.setBalance(newBalance);
         accountRepository.save(sourceAccount);
 
-        // Update the transaction with the new balance
         transaction.setChangedBalance(newBalance);
-
         return transactionRepository.save(transaction);
     }
 
@@ -72,7 +69,6 @@ public class TransactionService {
 
     public List<Transaction> getTransactionBySourceAccountId(String sourceAccountId) {
         List<Transaction> transactionList = transactionRepository.findBySourceAccountIdOrDestinationAccountId(sourceAccountId, sourceAccountId);
-//
         for (Transaction transaction : transactionList) {
             if (transaction.getDestinationAccountId().equals(sourceAccountId)) {
                 Account destinationAccount = accountRepository.findByAccountNumber(transaction.getDestinationAccountId());
@@ -82,6 +78,7 @@ public class TransactionService {
         return transactionList;
     }
 
+    @Transactional
     public Transaction updateTransaction(Long id, Transaction updatedTransaction) {
         Optional<Transaction> existingTransaction = transactionRepository.findById(id);
         if (existingTransaction.isPresent()) {
@@ -91,7 +88,7 @@ public class TransactionService {
             }
             return transactionRepository.save(transaction);
         } else {
-            throw new RuntimeException("Account not found");
+            throw new RuntimeException("Transaction not found");
         }
     }
 
@@ -112,15 +109,12 @@ public class TransactionService {
     public List<Map<String, Object>> getTotalChangedBalanceByDate(String sourceAccountId) {
         List<Object[]> results = transactionRepository.getTotalChangedBalanceByDate(sourceAccountId);
         List<Map<String, Object>> transactionCounts = new ArrayList<>();
-
         for (Object[] result : results) {
             Map<String, Object> countMap = new HashMap<>();
             countMap.put("date", result[0]);
             countMap.put("balance", result[1]);
             transactionCounts.add(countMap);
         }
-
         return transactionCounts;
     }
-
 }
