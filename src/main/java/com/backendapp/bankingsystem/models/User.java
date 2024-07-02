@@ -19,7 +19,7 @@ public class User {
     private String password;
     private String role;
 
-    @ManyToOne
+    @ManyToOne(optional = true)
     @JoinColumn(name = "customer_id", referencedColumnName = "customerId")
     private Customer customer;
 

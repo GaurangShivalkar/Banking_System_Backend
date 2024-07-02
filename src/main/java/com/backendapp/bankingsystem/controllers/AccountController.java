@@ -46,10 +46,11 @@ public class AccountController {
         return accountService.getAccountByAccountNo(accNo);
     }
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @PutMapping("/updateBalance/{id}")
-    public ResponseEntity<String> updateBalance(@PathVariable Long id, @RequestBody double amount) {
-        Account updatedBalance = accountService.updateBalance(id, amount);
-        return new ResponseEntity<>("Account balance successfully", HttpStatus.OK);
+    public ResponseEntity<String> updateBalance(@PathVariable Long id, @RequestParam double amount) {
+        Account updatedAccount = accountService.updateBalance(id, amount);
+        return ResponseEntity.ok("Account balance updated successfully. New balance: " + updatedAccount.getBalance());
     }
 
 

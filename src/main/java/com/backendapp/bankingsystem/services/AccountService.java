@@ -41,7 +41,9 @@ public class AccountService {
         Optional<Account> existingAccount = accountRepository.findById(id);
         if (existingAccount.isPresent()) {
             Account account = existingAccount.get();
-            account.setBalance(amount);
+            double currentBalance = account.getBalance();
+            double newBalance = currentBalance + amount; // Add the deposited amount to the current balance
+            account.setBalance(newBalance);
             return accountRepository.save(account);
         } else {
             throw new RuntimeException("Account not found");
