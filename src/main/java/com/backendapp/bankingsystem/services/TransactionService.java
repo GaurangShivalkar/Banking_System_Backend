@@ -43,6 +43,12 @@ public class TransactionService {
         if (sourceAccount.getBalance() < transaction.getAmount()) {
             throw new IllegalArgumentException("Insufficient balance in the source account");
         }
+        if (transaction.getTransactionType().equals("SELF") && !transaction.getSourceAccountId().equals(transaction.getDestinationAccountId())) {
+            throw new IllegalArgumentException("The source and destination account should be same!");
+        }
+        if (transaction.getTransactionType().equals("OTHER") && transaction.getSourceAccountId().equals(transaction.getDestinationAccountId())) {
+            throw new IllegalArgumentException("The source and destination account should not be same!");
+        }
         if (transaction.getTransactionType().equals("RTGS") && transaction.getAmount() < 200000) {
             throw new IllegalArgumentException("The amount can't be less than 2 lakh rs for RTGS transactions");
         }

@@ -27,7 +27,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("SELECT " +
             "SUM(CASE WHEN t.transactionType = 'RTGS' THEN 1 ELSE 0 END) AS rtgsCount, " +
             "SUM(CASE WHEN t.transactionType = 'NEFT' THEN 1 ELSE 0 END) AS neftCount, " +
-            "SUM(CASE WHEN t.transactionType = 'IMPS' THEN 1 ELSE 0 END) AS impsCount " +
+            "SUM(CASE WHEN t.transactionType = 'IMPS' THEN 1 ELSE 0 END) AS impsCount, " +
+            "SUM(CASE WHEN t.transactionType = 'SELF' THEN 1 ELSE 0 END) AS selfCount, " +
+            "SUM(CASE WHEN t.transactionType = 'OTHER' THEN 1 ELSE 0 END) AS otherCount " +
             "FROM Transaction t")
     List<Object[]> countTransactionTypes();
 

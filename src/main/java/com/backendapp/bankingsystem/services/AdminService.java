@@ -64,6 +64,8 @@ public class AdminService {
             result.put("RTGS", ((Number) countArray[0]).longValue());
             result.put("NEFT", ((Number) countArray[1]).longValue());
             result.put("IMPS", ((Number) countArray[2]).longValue());
+            result.put("SELF", ((Number) countArray[3]).longValue());
+            result.put("OTHER", ((Number) countArray[4]).longValue());
         }
 
         return result;

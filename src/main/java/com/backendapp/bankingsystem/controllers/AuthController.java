@@ -1,10 +1,9 @@
 package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.dto.JwtRequest;
-import com.backendapp.bankingsystem.dto.OtpDto;
 import com.backendapp.bankingsystem.models.User;
 import com.backendapp.bankingsystem.security.JwtHelper;
-import com.backendapp.bankingsystem.services.Generators;
+import com.backendapp.bankingsystem.services.OtpService;
 import com.backendapp.bankingsystem.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,8 @@ public class AuthController {
     private UserService userService;
     @Autowired
     private JwtHelper jwtHelper;
-
+    @Autowired
+    private OtpService otpService;
     private static String storedOtp;
 //    @Autowired
 //    private AuthenticationManager authenticationManager;
@@ -64,25 +64,42 @@ public class AuthController {
         return principal.getName();
     }
 
-    @PostMapping("/sendMail/{email}")
-    public String sendMail(@PathVariable String email) {
-        String otp = Generators.generateOTP();
-        String otpMsg = "The OTP for verification is:" + otp;
-        String otpSubject = "Validate your Email";
-        String status = userService.sendSimpleMail(email, otpMsg, otpSubject);
-        this.storedOtp = otp; // Store OTP temporarily in memory
+//    @PostMapping("/sendMail/{email}")
+//    public String sendMail(@PathVariable String email) {
+//        String otp = Generators.generateOTP();
+//        String otpMsg = "The OTP for verification is:" + otp;
+//        String otpSubject = "Validate your Email";
+//        String status = userService.sendSimpleMail(email, otpMsg, otpSubject);
+//        this.storedOtp = otp; // Store OTP temporarily in memory
+//        return "OTP sent successfully to " + email;
+//    }
+//
+//    @PostMapping("/verify")
+//    public boolean verifyEmail(@RequestBody OtpDto otpDto) {
+//        String otp = otpDto.getOtp();
+//        if (otp != null && otp.equals(storedOtp)) {
+//            // OTP verification successful
+//            return true;
+//        } else {
+//            // Incorrect OTP or null OTP
+//            System.out.println("Received OTP is incorrect or null: " + otp);
+//            return false;
+//        }
+//    }
+
+    @GetMapping("/generateOtp")
+    public String generateOtp(@RequestParam String key, @RequestParam String email) {
+        int otp = otpService.generateOtp(key);
+        otpService.sendOtp(email, otp);
         return "OTP sent successfully to " + email;
     }
 
-    @PostMapping("/verify")
-    public boolean verifyEmail(@RequestBody OtpDto otpDto) {
-        String otp = otpDto.getOtp();
-        if (otp != null && otp.equals(storedOtp)) {
-            // OTP verification successful
+    @GetMapping("/validateOtp")
+    public boolean validateOtp(@RequestParam String key, @RequestParam int otp) {
+        if (otpService.getOtp(key) == otp) {
+            otpService.clearOtp(key);
             return true;
         } else {
-            // Incorrect OTP or null OTP
-            System.out.println("Received OTP is incorrect or null: " + otp);
             return false;
         }
     }
