@@ -27,7 +27,6 @@ public class Transaction {
 
     private String sourceAccountId;
 
-
     private String destinationAccountId;
 
     private double amount;

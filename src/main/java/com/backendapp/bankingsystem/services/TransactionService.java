@@ -25,45 +25,61 @@ public class TransactionService {
     public Transaction insertTransaction(Transaction transaction) {
         Optional<Beneficiary> beneficiary = beneficiaryRepository.findById(transaction.getBeneficiary().getBeneficiaryId());
         if (beneficiary.isEmpty()) {
-            throw new IllegalArgumentException("Beneficiary not found");
+            throw new CustomExceptions.BeneficiaryNotFoundException("Beneficiary not found");
         }
 
         transaction.setTransactionMethod(beneficiary.get().getBeneficiaryType());
         transaction.setDestinationAccountId(beneficiary.get().getAccountNumber());
         Account sourceAccount = accountRepository.findByAccountNumber(transaction.getSourceAccountId());
 
+        validateTransaction(transaction, sourceAccount);
+
         if (transaction.getTransactionMethod().equals("INTERNAL")) {
-            Account destinationAccount = accountRepository.findByAccountNumber(transaction.getDestinationAccountId());
-            double receivedBalance = destinationAccount.getBalance() + transaction.getAmount();
-            transaction.setReceiverBalance(receivedBalance);
-            destinationAccount.setBalance(receivedBalance);
-            accountRepository.save(destinationAccount);
+            handleInternalTransaction(transaction);
         }
 
+        processTransaction(transaction, sourceAccount);
+
+        transaction.setTransactionStatus("processed");
+        return transactionRepository.save(transaction);
+    }
+
+    private void validateTransaction(Transaction transaction, Account sourceAccount) {
         if (sourceAccount.getBalance() < transaction.getAmount()) {
-            throw new IllegalArgumentException("Insufficient balance in the source account");
+            throw new CustomExceptions.InsufficientBalanceException("Insufficient balance in the source account");
         }
         if (transaction.getTransactionType().equals("SELF") && !transaction.getSourceAccountId().equals(transaction.getDestinationAccountId())) {
-            throw new IllegalArgumentException("The source and destination account should be same!");
+            throw new CustomExceptions.IllegalTransactionException("The source and destination account should be the same!");
         }
         if (transaction.getTransactionType().equals("OTHER") && transaction.getSourceAccountId().equals(transaction.getDestinationAccountId())) {
-            throw new IllegalArgumentException("The source and destination account should not be same!");
+            throw new CustomExceptions.IllegalTransactionException("The source and destination account should not be the same!");
         }
         if (transaction.getTransactionType().equals("RTGS") && transaction.getAmount() < 200000) {
-            throw new IllegalArgumentException("The amount can't be less than 2 lakh rs for RTGS transactions");
+            throw new CustomExceptions.IllegalTransactionException("The amount can't be less than 2 lakh Rs for RTGS transactions");
         }
-
         if (transaction.getTransactionType().equals("IMPS") && transaction.getAmount() > 200000) {
-            throw new IllegalArgumentException("The amount can't be more than 2 lakh rs for IMPS transactions");
+            throw new CustomExceptions.IllegalTransactionException("The amount can't be more than 2 lakh Rs for IMPS transactions");
         }
+    }
 
+
+    private void handleInternalTransaction(Transaction transaction) {
+        Account destinationAccount = accountRepository.findByAccountNumber(transaction.getDestinationAccountId());
+        double receivedBalance = destinationAccount.getBalance() + transaction.getAmount();
+        transaction.setReceiverBalance(receivedBalance);
+        destinationAccount.setBalance(receivedBalance);
+        accountRepository.save(destinationAccount);
+    }
+
+    private void processTransaction(Transaction transaction, Account sourceAccount) {
         double newBalance = sourceAccount.getBalance() - transaction.getAmount();
         sourceAccount.setBalance(newBalance);
         accountRepository.save(sourceAccount);
 
         transaction.setChangedBalance(newBalance);
-        return transactionRepository.save(transaction);
+        transaction.setTransactionStatus("completed");
     }
+
 
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();

@@ -22,7 +22,6 @@ public class AuthController {
     private JwtHelper jwtHelper;
     @Autowired
     private OtpService otpService;
-    private static String storedOtp;
 //    @Autowired
 //    private AuthenticationManager authenticationManager;
 //    @Autowired
@@ -52,7 +51,6 @@ public class AuthController {
 //        } catch (BadCredentialsException e) {
 //            throw new Exception("Incorrect email or password", e);
 //        }
-
         final User userDetails = userService.loadUserByEmail(jwtRequest.getEmail(), jwtRequest.getPassword());
         final String token = jwtHelper.generateToken(userDetails);
 
@@ -63,29 +61,6 @@ public class AuthController {
     public String loggedInUser(Principal principal) {
         return principal.getName();
     }
-
-//    @PostMapping("/sendMail/{email}")
-//    public String sendMail(@PathVariable String email) {
-//        String otp = Generators.generateOTP();
-//        String otpMsg = "The OTP for verification is:" + otp;
-//        String otpSubject = "Validate your Email";
-//        String status = userService.sendSimpleMail(email, otpMsg, otpSubject);
-//        this.storedOtp = otp; // Store OTP temporarily in memory
-//        return "OTP sent successfully to " + email;
-//    }
-//
-//    @PostMapping("/verify")
-//    public boolean verifyEmail(@RequestBody OtpDto otpDto) {
-//        String otp = otpDto.getOtp();
-//        if (otp != null && otp.equals(storedOtp)) {
-//            // OTP verification successful
-//            return true;
-//        } else {
-//            // Incorrect OTP or null OTP
-//            System.out.println("Received OTP is incorrect or null: " + otp);
-//            return false;
-//        }
-//    }
 
     @GetMapping("/generateOtp")
     public String generateOtp(@RequestParam String key, @RequestParam String email) {
@@ -113,6 +88,4 @@ public class AuthController {
         userService.sendSimpleMail(email, msg, subject);
         return new ResponseEntity<>("the user is data is updated successfully" + updatedUser.getUsername(), HttpStatus.OK);
     }
-
-
 }
