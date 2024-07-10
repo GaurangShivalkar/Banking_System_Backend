@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,9 +24,13 @@ public class UserService {
 
     @Value("${spring.mail.username}")
     private String sender;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     public User saveUser(User user) {
-
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
         // Save the user to the database
         return userRepository.save(user);
 
@@ -65,11 +70,25 @@ public class UserService {
     }
 
     public User loadUserByEmail(String email, String password) throws UsernameNotFoundException {
-        User user = userRepository.findByEmailAndPassword(email, password);
-        if (user == null) {
+        User user = userRepository.findByEmail(email);
+//        if (user == null) {
+//            throw new UsernameNotFoundException("User not found with email: " + email);
+//        }
+//        return user;
+
+//        try {
+//            authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(jwtRequest.getEmail(), jwtRequest.getPassword())
+//            );
+//        } catch (BadCredentialsException e) {
+//            throw new Exception("Incorrect email or password", e);
+//        }
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+
+            return user;
+        } else {
             throw new UsernameNotFoundException("User not found with email: " + email);
         }
-        return user;
     }
 
     public User getUserByEmail(String email) {

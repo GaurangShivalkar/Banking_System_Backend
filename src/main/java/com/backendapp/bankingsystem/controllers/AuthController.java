@@ -44,13 +44,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public String createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
-//        try {
-//            authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(jwtRequest.getEmail(), jwtRequest.getPassword())
-//            );
-//        } catch (BadCredentialsException e) {
-//            throw new Exception("Incorrect email or password", e);
-//        }
         final User userDetails = userService.loadUserByEmail(jwtRequest.getEmail(), jwtRequest.getPassword());
         final String token = jwtHelper.generateToken(userDetails);
 
