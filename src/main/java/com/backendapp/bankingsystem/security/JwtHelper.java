@@ -49,7 +49,6 @@ public class JwtHelper {
 
     //for retrieveing any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
-//        return Jwts.parser().setSigningKey(secret_key).build().parseClaimsJws(token).getBody();
         return Jwts.parser().setSigningKey(secret_key).build().parseSignedClaims(token).getPayload();
     }
 
@@ -74,8 +73,6 @@ public class JwtHelper {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
-
-
 
     //validate token
     public Boolean validateToken(String token) {
