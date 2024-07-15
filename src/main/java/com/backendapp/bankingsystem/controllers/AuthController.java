@@ -9,6 +9,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -22,8 +26,8 @@ public class AuthController {
     private JwtHelper jwtHelper;
     @Autowired
     private OtpService otpService;
-//    @Autowired
-//    private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 //    @Autowired
 //    private PasswordEncoder passwordEncoder;
 
@@ -44,8 +48,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public String createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
-        final User userDetails = userService.loadUserByEmail(jwtRequest.getEmail(), jwtRequest.getPassword());
-        final String token = jwtHelper.generateToken(userDetails);
+        //final User userDetails = userService.loadUserByEmail(jwtRequest.getEmail(), jwtRequest.getPassword());
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.getEmail(), jwtRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        final String token = jwtHelper.generateToken(authentication);
 
         return token;
     }

@@ -6,15 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -71,18 +77,7 @@ public class UserService {
 
     public User loadUserByEmail(String email, String password) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
-//        if (user == null) {
-//            throw new UsernameNotFoundException("User not found with email: " + email);
-//        }
-//        return user;
 
-//        try {
-//            authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(jwtRequest.getEmail(), jwtRequest.getPassword())
-//            );
-//        } catch (BadCredentialsException e) {
-//            throw new Exception("Incorrect email or password", e);
-//        }
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
 
             return user;
@@ -99,7 +94,7 @@ public class UserService {
     public String sendSimpleMail(String email, String text, String subject) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            // Setting up necessary details
+
             mailMessage.setFrom(sender);
             mailMessage.setTo(email);
             mailMessage.setText(text);
@@ -115,4 +110,21 @@ public class UserService {
         }
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not exists by Username or Email");
+        }
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        GrantedAuthority UserAuthority = new SimpleGrantedAuthority(user.getRole());
+        authorities.add(UserAuthority);
+
+        return new org.springframework.security.core.userdetails.User(
+                email,
+                user.getPassword(),
+                authorities
+        );
+    }
 }

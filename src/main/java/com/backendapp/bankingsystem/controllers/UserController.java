@@ -1,6 +1,7 @@
 package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.models.User;
+import com.backendapp.bankingsystem.security.JwtHelper;
 import com.backendapp.bankingsystem.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,8 @@ public class UserController {
     @Autowired
     private UserService userService;
     private String storedOtp;
+    @Autowired
+    private JwtHelper jwtHelper;
 
     @GetMapping("/showAllUsers")
     public List<User> getAllUser() {
@@ -37,5 +40,10 @@ public class UserController {
         return customerId;
     }
 
+
+//    @GetMapping("/checkExpiry/{token}")
+//    public Boolean isTokenExpired(@PathVariable String token) {
+//        return jwtHelper.isTokenExpired(token);
+//    }
 
 }
