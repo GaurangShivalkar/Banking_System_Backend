@@ -3,6 +3,7 @@ package com.backendapp.bankingsystem.security;
 import com.backendapp.bankingsystem.models.User;
 import com.backendapp.bankingsystem.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -61,8 +62,14 @@ public class JwtHelper {
 
     //check if the token has expired
     public Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
-        return expiration.before(new Date());
+        try {
+            Key key = Keys.hmacShaKeyFor(secret_key.getBytes());
+            Jws<Claims> claims = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token);
+            return claims.getBody().getExpiration().before(new Date());
+        } catch (Exception e) {
+            System.err.println("Error parsing or validating token: " + e.getMessage());
+            return true; // Token considered expired on any exception
+        }
     }
 
     //generate token for user

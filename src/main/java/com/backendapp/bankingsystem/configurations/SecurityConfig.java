@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -45,8 +46,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/users/**").authenticated()
                 .requestMatchers("api/beneficiaries/**").authenticated()
                 .requestMatchers("api/transactions/**").authenticated()
-                .and().exceptionHandling(ex -> ex.authenticationEntryPoint(point));
-        //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .and().exceptionHandling(ex -> ex.authenticationEntryPoint(point))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

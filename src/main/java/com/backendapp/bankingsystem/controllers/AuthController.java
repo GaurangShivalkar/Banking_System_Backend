@@ -87,4 +87,9 @@ public class AuthController {
         userService.sendSimpleMail(email, msg, subject);
         return new ResponseEntity<>("the user is data is updated successfully" + updatedUser.getUsername(), HttpStatus.OK);
     }
+
+    @GetMapping("/checkExpiry/{token}")
+    public Boolean isTokenExpired(@PathVariable String token) {
+        return jwtHelper.isTokenExpired(token);
+    }
 }
