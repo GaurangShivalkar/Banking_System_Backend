@@ -67,7 +67,7 @@ public class UserService implements UserDetailsService {
             } else if (updatedUser.getUsername() != null) {
                 user.setUsername(updatedUser.getUsername());
             } else if (updatedUser.getPassword() != null) {
-                user.setPassword(updatedUser.getPassword());
+                user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             }
             return userRepository.save(user);
         } else {

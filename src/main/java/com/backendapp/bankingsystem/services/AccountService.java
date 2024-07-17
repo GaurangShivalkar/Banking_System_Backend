@@ -15,8 +15,9 @@ public class AccountService {
     private AccountRepository accountRepository;
 
     public Account createAccount(Account account) {
+        account.setAccountNumber(Generators.generateAccountNumber());
+        account.setAccountStatus("restricted");
 
-        // Save the user to the database
         return accountRepository.save(account);
     }
 
