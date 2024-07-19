@@ -56,6 +56,7 @@ public class AuthController {
         return token;
     }
 
+
     @GetMapping("/loggedInUser")
     public String loggedInUser(Principal principal) {
         return principal.getName();
@@ -92,4 +93,13 @@ public class AuthController {
     public Boolean isTokenExpired(@PathVariable String token) {
         return jwtHelper.isTokenExpired(token);
     }
+
+//    @PostMapping("/refreshToken/{token}")
+//    public String createRefreshToken(@PathVariable String token) throws Exception {
+//        User tokenData = jwtHelper.getUserFromToken(token);
+//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(tokenData.getEmail(), tokenData.getPassword()));
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        String refreshToken = jwtHelper.refreshToken(authentication);
+//        return refreshToken;
+//    }
 }

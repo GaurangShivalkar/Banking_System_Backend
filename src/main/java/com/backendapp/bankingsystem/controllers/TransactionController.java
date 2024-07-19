@@ -2,6 +2,7 @@ package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.models.Transaction;
 import com.backendapp.bankingsystem.repositories.TransactionRepository;
+import com.backendapp.bankingsystem.security.JwtHelper;
 import com.backendapp.bankingsystem.services.PdfService;
 import com.backendapp.bankingsystem.services.TransactionService;
 import com.backendapp.bankingsystem.services.UserService;
@@ -27,6 +28,8 @@ public class TransactionController {
     private UserService userService;
     @Autowired
     private PdfService pdfService;
+    @Autowired
+    private JwtHelper jwtHelper;
 
     @PostMapping("/makeTransaction")
     public ResponseEntity<String> insertTransaction(@RequestBody Transaction transaction) {
@@ -102,5 +105,6 @@ public class TransactionController {
 
         return transactionService.getTotalChangedBalanceByDate(accountNumber);
     }
+
 
 }

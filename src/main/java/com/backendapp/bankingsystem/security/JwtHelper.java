@@ -19,6 +19,7 @@ import java.util.function.Function;
 @Component
 public class JwtHelper {
 
+
     private final UserRepository userRepository;
     //requirement :
     @Value("${jwt.token.validity}")
@@ -40,7 +41,7 @@ public class JwtHelper {
         user.setUsername((String) claims.get("username"));
         user.setEmail((String) claims.get("email"));
         user.setRole((String) claims.get("role"));
-        System.out.println("user: " + user);
+
         return user;
     }
 
@@ -102,5 +103,9 @@ public class JwtHelper {
         }
     }
 
+//    public String refreshToken(Authentication authentication) {
+//        final String refreshToken = generateToken(authentication);
+//        return refreshToken;
+//    }
 
 }
