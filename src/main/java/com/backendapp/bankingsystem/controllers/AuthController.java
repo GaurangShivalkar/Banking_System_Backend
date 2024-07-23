@@ -1,9 +1,13 @@
 package com.backendapp.bankingsystem.controllers;
 
 import com.backendapp.bankingsystem.dto.JwtRequest;
+import com.backendapp.bankingsystem.dto.JwtResponse;
+import com.backendapp.bankingsystem.dto.RefreshTokenRequestDTO;
+import com.backendapp.bankingsystem.models.RefreshToken;
 import com.backendapp.bankingsystem.models.User;
 import com.backendapp.bankingsystem.security.JwtHelper;
 import com.backendapp.bankingsystem.services.OtpService;
+import com.backendapp.bankingsystem.services.RefreshTokenService;
 import com.backendapp.bankingsystem.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -28,6 +32,9 @@ public class AuthController {
     private OtpService otpService;
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private RefreshTokenService refreshTokenService;
 //    @Autowired
 //    private PasswordEncoder passwordEncoder;
 
@@ -46,14 +53,43 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/login")
-    public String createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
-        //final User userDetails = userService.loadUserByEmail(jwtRequest.getEmail(), jwtRequest.getPassword());
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.getEmail(), jwtRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = jwtHelper.generateToken(authentication);
+//    @PostMapping("/login")
+//    public String createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
+//        //final User userDetails = userService.loadUserByEmail(jwtRequest.getEmail(), jwtRequest.getPassword());
+//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.getEmail(), jwtRequest.getPassword()));
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        final String token = jwtHelper.generateToken(authentication);
+//
+//        return token;
+//    }
 
-        return token;
+    @PostMapping("/login")
+    public JwtResponse createAuthenticationToken(@RequestBody JwtRequest jwtRequest) throws Exception {
+
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.getEmail(), jwtRequest.getPassword()));
+        if (authentication.isAuthenticated()) {
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(jwtRequest.getEmail());
+            return JwtResponse.builder()
+                    .token(jwtHelper.generateToken(jwtRequest.getEmail()))
+                    .refreshToken(refreshToken.getToken())
+                    .build();
+
+        } else {
+            throw new UsernameNotFoundException("invalid user request..!!");
+        }
+    }
+
+    @PostMapping("/refreshToken")
+    public JwtResponse refreshToken(@RequestBody RefreshTokenRequestDTO refreshTokenRequestDTO) {
+        return refreshTokenService.findByToken(refreshTokenRequestDTO.getRefreshToken())
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(userInfo -> {
+                    String jwtToken = jwtHelper.generateToken(userInfo.getEmail());
+                    return JwtResponse.builder()
+                            .token(jwtToken)
+                            .refreshToken(refreshTokenRequestDTO.getRefreshToken()).build();
+                }).orElseThrow(() -> new RuntimeException("Refresh Token is not in DB..!!"));
     }
 
 
@@ -94,12 +130,14 @@ public class AuthController {
         return jwtHelper.isTokenExpired(token);
     }
 
-//    @PostMapping("/refreshToken/{token}")
-//    public String createRefreshToken(@PathVariable String token) throws Exception {
-//        User tokenData = jwtHelper.getUserFromToken(token);
-//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(tokenData.getEmail(), tokenData.getPassword()));
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//        String refreshToken = jwtHelper.refreshToken(authentication);
-//        return refreshToken;
-//    }
+    @DeleteMapping("/deleteRefreshToken")
+    public ResponseEntity<String> deleteRefreshToken(@RequestBody RefreshToken token) {
+        boolean isDeleted = refreshTokenService.deleteRefreshToken(token);
+        if (isDeleted) {
+            return new ResponseEntity<>("Refresh token has been deleted successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Invalid refresh token", HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

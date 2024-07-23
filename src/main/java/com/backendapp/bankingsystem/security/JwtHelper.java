@@ -8,7 +8,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -73,10 +72,27 @@ public class JwtHelper {
         }
     }
 
-    //generate token for user
-    //public String generateToken(User user)
-    public String generateToken(Authentication authentication) {
-        String email = authentication.getName();
+//    //generate token for user
+//    public String generateToken(Authentication authentication) {
+//        String email = authentication.getName();
+//        User user = userRepository.findByEmail(email);
+//        Date now = new Date();
+//        Date expiryDate = new Date(now.getTime() + JWT_TOKEN_VALIDITY);
+//        Key key = Keys.hmacShaKeyFor(secret_key.getBytes());
+//        return Jwts.builder()
+//                .claim("userId", user.getUserId())
+//                .claim("username", user.getUsername())
+//                .claim("email", user.getEmail())
+//                .claim("role", user.getRole())
+//                .setIssuedAt(now)
+//                .setExpiration(expiryDate)
+//                .signWith(key, SignatureAlgorithm.HS256)
+//                .compact();
+//    }
+
+    //generate token new method
+    public String generateToken(String email) {
+
         User user = userRepository.findByEmail(email);
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + JWT_TOKEN_VALIDITY);
