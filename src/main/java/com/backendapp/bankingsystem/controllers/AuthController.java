@@ -140,4 +140,20 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/forgetPassword/{email}")
+    public ResponseEntity<String> forgetPassword(@PathVariable String email) {
+        userService.forgetPassword(email);
+        return new ResponseEntity<>("Reset email hase been sent ", HttpStatus.OK);
+    }
+
+    @GetMapping("/validateResetPasswordToken")
+    public Boolean validateResetPasswordToken(@RequestParam String token) {
+        return jwtHelper.validateToken(token);
+    }
+
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestBody User password) {
+        userService.resetPassword(token, password);
+        return new ResponseEntity<>("Passowrd has been changed successfully", HttpStatus.OK);
+    }
 }

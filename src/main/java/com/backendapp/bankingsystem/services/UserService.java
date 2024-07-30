@@ -2,6 +2,7 @@ package com.backendapp.bankingsystem.services;
 
 import com.backendapp.bankingsystem.models.User;
 import com.backendapp.bankingsystem.repositories.UserRepository;
+import com.backendapp.bankingsystem.security.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -32,6 +33,8 @@ public class UserService implements UserDetailsService {
     private String sender;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtHelper jwtHelper;
 
 
     public User saveUser(User user) {
@@ -126,5 +129,27 @@ public class UserService implements UserDetailsService {
                 user.getPassword(),
                 authorities
         );
+    }
+
+    public void forgetPassword(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user != null) {
+            String resetPasswordToken = jwtHelper.generateToken(email);
+            String Subject = "Mail for Reset Password";
+            String resetLink = "http://localhost:5173/resetPassword?token=" + resetPasswordToken;
+            String Message = "<p>the given below is the link for reset password</p> " +
+                    "<a href=" + resetLink + ">Reset Password </a>";
+            sendSimpleMail(email, Message, Subject);
+        } else {
+            throw new RuntimeException("User Email does not exist");
+        }
+
+    }
+
+    public void resetPassword(String token, User password) {
+        if (jwtHelper.validateToken(token)) {
+            User userData = jwtHelper.getUserFromToken(token);
+            updateUser(userData.getUserId(), password);
+        }
     }
 }
