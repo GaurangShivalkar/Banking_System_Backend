@@ -1,6 +1,8 @@
 package com.backendapp.bankingsystem.services;
 
+import com.backendapp.bankingsystem.models.ResetToken;
 import com.backendapp.bankingsystem.models.User;
+import com.backendapp.bankingsystem.repositories.ResetTokenRepository;
 import com.backendapp.bankingsystem.repositories.UserRepository;
 import com.backendapp.bankingsystem.security.JwtHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,39 +16,34 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService implements UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
-
+    @Autowired
+    private ResetTokenRepository resetTokenRepository;
     @Autowired
     private JavaMailSender javaMailSender;
-
+    @Autowired
+    private JwtHelper jwtHelper;
     @Value("${spring.mail.username}")
     private String sender;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtHelper jwtHelper;
-
 
     public User saveUser(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         // Save the user to the database
         return userRepository.save(user);
-
     }
 
     public List<User> getAllUsers() {
-
         return userRepository.findAll();
     }
 
@@ -82,7 +79,6 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByEmail(email);
 
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
-
             return user;
         } else {
             throw new UsernameNotFoundException("User not found with email: " + email);
@@ -93,7 +89,6 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-
     public String sendSimpleMail(String email, String text, String subject) {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
@@ -102,7 +97,6 @@ public class UserService implements UserDetailsService {
             mailMessage.setTo(email);
             mailMessage.setText(text);
             mailMessage.setSubject(subject);
-
             // Sending the mail
             javaMailSender.send(mailMessage);
             return "Mail Sent Successfully...";
@@ -131,25 +125,54 @@ public class UserService implements UserDetailsService {
         );
     }
 
+    @Transactional
     public void forgetPassword(String email) {
         User user = userRepository.findByEmail(email);
         if (user != null) {
-            String resetPasswordToken = jwtHelper.generateToken(email);
-            String Subject = "Mail for Reset Password";
-            String resetLink = "http://localhost:5173/resetPassword?token=" + resetPasswordToken;
-            String Message = "<p>the given below is the link for reset password</p> " +
-                    "<a href=" + resetLink + ">Reset Password </a>";
-            sendSimpleMail(email, Message, Subject);
+            try {
+                String resetPasswordToken = jwtHelper.generateToken(email);
+
+                Date expiryDate = jwtHelper.getExpirationDateFromToken(resetPasswordToken);
+                System.out.println(expiryDate);
+
+                ResetToken resetToken = ResetToken.builder()
+                        .resetPasswordToken(resetPasswordToken)
+                        .expiryDate(expiryDate)
+                        .build();
+                resetTokenRepository.save(resetToken);
+
+                // Prepare and send the email
+                String subject = "Password Reset Request";
+                String resetLink = "http://localhost:5173/resetPassword?token=" + resetPasswordToken;
+                String message = "Please click the following link to reset your password:\n" + resetLink;
+                sendSimpleMail(email, message, subject);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to process password reset request", e);
+            }
         } else {
-            throw new RuntimeException("User Email does not exist");
+            throw new RuntimeException("User email does not exist");
+        }
+    }
+
+    @Transactional
+    public void deleteTokenFromDb(String token) {
+        Optional<ResetToken> resetToken = resetTokenRepository.findByResetPasswordToken(token);
+        if (resetToken.isPresent() && jwtHelper.validateToken(token)) {
+            resetTokenRepository.deleteByResetPasswordToken(token);
+
         }
 
     }
 
+    @Transactional
     public void resetPassword(String token, User password) {
-        if (jwtHelper.validateToken(token)) {
+        Optional<ResetToken> resetToken = resetTokenRepository.findByResetPasswordToken(token);
+        if (jwtHelper.validateToken(token) && resetToken.isPresent()) {
             User userData = jwtHelper.getUserFromToken(token);
-            updateUser(userData.getUserId(), password);
+            User userUpdate = updateUser(userData.getUserId(), password);
+            if (userUpdate != null) {
+                deleteTokenFromDb(token);
+            }
         }
     }
 }

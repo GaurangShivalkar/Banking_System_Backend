@@ -47,7 +47,9 @@ public class JwtHelper {
 
     //retrieve expiration date from jwt token
     public Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
+        Key key = Keys.hmacShaKeyFor(secret_key.getBytes());
+        Claims claims = Jwts.parser().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        return claims.getExpiration();
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -57,7 +59,7 @@ public class JwtHelper {
 
     //for retrieveing any information from token we will need the secret key
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser().setSigningKey(secret_key).build().parseSignedClaims(token).getPayload();
+        return Jwts.parser().setSigningKey(secret_key).build().parseSignedClaims(token).getBody();
     }
 
     //check if the token has expired

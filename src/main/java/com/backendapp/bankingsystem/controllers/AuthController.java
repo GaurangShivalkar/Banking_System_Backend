@@ -4,7 +4,9 @@ import com.backendapp.bankingsystem.dto.JwtRequest;
 import com.backendapp.bankingsystem.dto.JwtResponse;
 import com.backendapp.bankingsystem.dto.RefreshTokenRequestDTO;
 import com.backendapp.bankingsystem.models.RefreshToken;
+import com.backendapp.bankingsystem.models.ResetToken;
 import com.backendapp.bankingsystem.models.User;
+import com.backendapp.bankingsystem.repositories.ResetTokenRepository;
 import com.backendapp.bankingsystem.security.JwtHelper;
 import com.backendapp.bankingsystem.services.OtpService;
 import com.backendapp.bankingsystem.services.RefreshTokenService;
@@ -20,6 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -35,6 +38,8 @@ public class AuthController {
 
     @Autowired
     private RefreshTokenService refreshTokenService;
+    @Autowired
+    private ResetTokenRepository resetTokenRepository;
 //    @Autowired
 //    private PasswordEncoder passwordEncoder;
 
@@ -148,7 +153,12 @@ public class AuthController {
 
     @GetMapping("/validateResetPasswordToken")
     public Boolean validateResetPasswordToken(@RequestParam String token) {
-        return jwtHelper.validateToken(token);
+        Optional<ResetToken> resetToken = resetTokenRepository.findByResetPasswordToken(token);
+        if (resetToken.isPresent() && jwtHelper.validateToken(token)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @PostMapping("/resetPassword")
